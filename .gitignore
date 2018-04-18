@@ -1,0 +1,7 @@
+*.o
+ga_test
+a.out
+sol_sun*
+tmp*
+*.out
+

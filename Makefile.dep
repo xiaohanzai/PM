@@ -1,0 +1,5 @@
+poisson_fft.o: poisson_fft.cc poisson_fft.hh
+sol_base.o: sol_base.cc sol_base.hh
+sol_sun.o: sol_sun.cc sol_sun.hh sol_base.hh
+sol_rk4.o: sol_rk4.cc sol_rk4.hh sol_base.hh
+
