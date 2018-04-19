@@ -20,12 +20,12 @@ class poisson_fft {
         double* const w;
         poisson_fft(int n_);
         ~poisson_fft();
-        void init();
+        // virtual void init() = 0;
         void solve();
-        void init_mms();
-        double l2_error_mms();
-        void print(bool solution);
-        void output_solution(const char* filename);
+        // void init_mms();
+        // double l2_error_mms();
+        // void print(bool solution);
+        // void output_solution(const char* filename);
         /** Outputs the source term in the 2D Gnuplot matrix format.
          * \param[in] filename the name of the file to write to. */
         // inline void output_source(const char* filename) {

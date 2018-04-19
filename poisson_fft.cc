@@ -29,16 +29,16 @@ poisson_fft::~poisson_fft() {
     fftw_free(f);
 }
 
-/** Initializes the source term to be a stepped function. */
-void poisson_fft::init() {
-    for(int j=0;j<n;j++) {
-        double y=(j+1)*h;
-        for(int i=0;i<n;i++) {
-            double x=(i+1)*h;
-            f[i+n*j]=fabs(x-0.5)<0.25&&fabs(y-0.5)<0.25?(x>0.5?-1:1):0;
-        }
-    }
-}
+// /** Initializes the source term to be a stepped function. */
+// void poisson_fft::init() {
+//     for(int j=0;j<n;j++) {
+//         double y=(j+1)*h;
+//         for(int i=0;i<n;i++) {
+//             double x=(i+1)*h;
+//             f[i+n*j]=fabs(x-0.5)<0.25&&fabs(y-0.5)<0.25?(x>0.5?-1:1):0;
+//         }
+//     }
+// }
 
 /** Solves the linear system using the fast Fourier transform. */
 void poisson_fft::solve() {
@@ -59,16 +59,16 @@ void poisson_fft::solve() {
     fftw_execute(plan_bck);
 }
 
-/** Prints either the source term or the solution as a grid of text values.
- * \param[in] solution whether to print the solution */
-void poisson_fft::print(bool solution) {
-    double *ptr=solution?v:f;
-    for(int j=0;j<n;j++) {
-        printf("%g",v[j]);
-        for(int i=1;i<n;i++) printf(" %g",ptr[j+i*n]);
-        putchar('\n');
-    }
-}
+// /** Prints either the source term or the solution as a grid of text values.
+//  * \param[in] solution whether to print the solution */
+// void poisson_fft::print(bool solution) {
+//     double *ptr=solution?v:f;
+//     for(int j=0;j<n;j++) {
+//         printf("%g",v[j]);
+//         for(int i=1;i<n;i++) printf(" %g",ptr[j+i*n]);
+//         putchar('\n');
+//     }
+// }
 
 // /** Outputs the solution in the Gnuplot 2D matrix format, padding the grid with
 //  * zeros to represent the Dirichlet boundary condition.
@@ -96,27 +96,27 @@ void poisson_fft::print(bool solution) {
 
 /** Initializes the source term corresponding to the manufactured solution with
  * v(x,y)=(1-x*x)*(1-y*y)*exp(x). */
-void poisson_fft::init_mms() {
-    for(int j=0;j<n;j++) {
-        double y=(j+1)*h;
-        for(int i=0;i<n;i++) {
-            double x=(i+1)*h;
-            f[i+n*j]=-exp(x)*x*(-2-3*y+3*y*y+x*(2-y+y*y));
-        }
-    }
-}
+// void poisson_fft::init_mms() {
+//     for(int j=0;j<n;j++) {
+//         double y=(j+1)*h;
+//         for(int i=0;i<n;i++) {
+//             double x=(i+1)*h;
+//             f[i+n*j]=-exp(x)*x*(-2-3*y+3*y*y+x*(2-y+y*y));
+//         }
+//     }
+// }
 
 /** Calculates the L2 norm of the difference between the computed solution and
  * the analytical manufactured solution. */
-double poisson_fft::l2_error_mms() {
-    double l2=0,del;
-    for(int j=0;j<n;j++) {
-        double y=(j+1)*h;
-        for(int i=0;i<n;i++) {
-            double x=(i+1)*h;
-            del=v[i+n*j]-exp(x)*x*(1-x)*y*(1-y);
-            l2+=del*del;
-        }
-    }
-    return sqrt(h*h*l2);
-}
+// double poisson_fft::l2_error_mms() {
+//     double l2=0,del;
+//     for(int j=0;j<n;j++) {
+//         double y=(j+1)*h;
+//         for(int i=0;i<n;i++) {
+//             double x=(i+1)*h;
+//             del=v[i+n*j]-exp(x)*x*(1-x)*y*(1-y);
+//             l2+=del*del;
+//         }
+//     }
+//     return sqrt(h*h*l2);
+// }

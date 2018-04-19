@@ -29,7 +29,7 @@ int main() {
 
 	// test symplectic integration
 	galaxy ga(20000,"IC/ic_0.txt");
-	ga.solve_fixed(0.03,200,true);
+	ga.galaxy_solve(0.03,200,true);
 
 	return 0;
 
