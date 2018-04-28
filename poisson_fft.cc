@@ -59,16 +59,16 @@ void poisson_fft::solve() {
     fftw_execute(plan_bck);
 }
 
-// /** Prints either the source term or the solution as a grid of text values.
-//  * \param[in] solution whether to print the solution */
-// void poisson_fft::print(bool solution) {
-//     double *ptr=solution?v:f;
-//     for(int j=0;j<n;j++) {
-//         printf("%g",v[j]);
-//         for(int i=1;i<n;i++) printf(" %g",ptr[j+i*n]);
-//         putchar('\n');
-//     }
-// }
+/** Prints either the source term or the solution as a grid of text values.
+ * \param[in] solution whether to print the solution */
+void poisson_fft::print_fftsolution(bool solution) {
+    double *ptr=solution?v:f;
+    for(int j=0;j<n;j++) {
+        printf("%g",v[j]);
+        for(int i=1;i<n;i++) printf(" %g",ptr[j+i*n]);
+        putchar('\n');
+    }
+}
 
 // /** Outputs the solution in the Gnuplot 2D matrix format, padding the grid with
 //  * zeros to represent the Dirichlet boundary condition.

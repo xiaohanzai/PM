@@ -4,7 +4,7 @@ include config.mk
 cflags+=-std=c++11
 
 # Lists of files to be built
-objs=sol_base.o sol_sun.o sol_rk4.o poisson_fft.o galaxy.o
+objs=sol_base.o sol_euler.o sol_sun.o sol_rk4.o sol_leapfrog.o poisson_fft.o galaxy.o
 src=$(patsubst %.o,%.cc,$(objs))
 execs=ga_test
 

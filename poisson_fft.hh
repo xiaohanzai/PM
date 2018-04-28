@@ -11,20 +11,20 @@ class poisson_fft {
         /** The total number of gridpoints. */
         const int nn;
         /** The grid spacing. */
-        const double h;
+        double h;
         /** The discretized source term in the Poisson equation. */
-        double* const f;
+        double *f;
         /** The discretized solution to the Poisson equation. */
-        double* const v;
+        double *v;
         /** The frequency domain. */
-        double* const w;
+        double *w;
         poisson_fft(int n_);
         ~poisson_fft();
         // virtual void init() = 0;
         void solve();
         // void init_mms();
         // double l2_error_mms();
-        // void print(bool solution);
+        void print_fftsolution(bool solution);
         // void output_solution(const char* filename);
         /** Outputs the source term in the 2D Gnuplot matrix format.
          * \param[in] filename the name of the file to write to. */
