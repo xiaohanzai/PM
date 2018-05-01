@@ -44,6 +44,7 @@ void galaxy::galaxy_calc_rho(double *in) {
     int i;
     for(i = 0; i < N_GRID*N_GRID; i++) f[i] = 0;
 
+    /* CIC */
     // double x, y, h2 = pow(h,2);
     // double delx, dely;
     // int x_, y_;
@@ -62,41 +63,65 @@ void galaxy::galaxy_calc_rho(double *in) {
     //     }
     // }
 
+    /* NGP */
     int indi, indj;
     for(i = 0; i < N; i++) {
+        if(fabs(in[4*i]) > H_BOXSIZE - h || fabs(in[4*i+1]) > H_BOXSIZE - h)
+            continue;
         indi = (int)((in[4*i] + H_BOXSIZE) / h) - 1;
         indj = (int)((in[4*i+1] + H_BOXSIZE) / h) - 1;
-        if(indi>=0 && indi<N_GRID-1 && indj>=0 && indj<N_GRID-1) {
-            if(in[4*i] - indi*h > h/2.) indi = indi+1;
-            if(in[4*i+1] - indj*h > h/2.) indj = indj+1;
-            f[indi*N_GRID+indj] += 4*M_PI*G*m[i]/h/h;
-        }
+        if(in[4*i] + H_BOXSIZE - (indi+1)*h > h/2.) indi += 1;
+        if(in[4*i+1] + H_BOXSIZE - (indj+1)*h > h/2.) indj += 1;
+        f[indi + N_GRID*indj] += 4*M_PI*G*m[i]/h/h;
     }
+
+    /* Boundary Conditions */
+    // double x, y;
+    // for(indi = 0; indi < N_GRID; indi++) {
+    //     x = -H_BOXSIZE + (indi+1)*h;
+    //     y = H_BOXSIZE;
+    //     f[indi+N_GRID*0] += G*N/sqrt(x*x+y*y)/h/h;
+    //     f[indi+N_GRID*(N_GRID-1)] += G*N/sqrt(x*x+y*y)/h/h;
+    // }
+    // for(indj = 0; indj < N_GRID; indj++) {
+    //     y = -H_BOXSIZE + (indj+1)*h;
+    //     x = H_BOXSIZE;
+    //     f[0+N_GRID*indj] += G*N/sqrt(x*x+y*y)/h/h;
+    //     f[N_GRID-1+N_GRID*indj] += G*N/sqrt(x*x+y*y)/h/h;
+    // }
+            
+}
+
+void galaxy::galaxy_calc_potential() {
+    /* Direct summation for the grid points */
+    // int i, j;
+    // double delx, dely, r;
+    // for(i = 0; i < N_GRID; i++) {
+    //     for(j = 0; j < N_GRID; j++) {
+    //         v[i+N_GRID*j] = f[i+N_GRID*j]/4./M_PI*h;
+    //     }
+    // }
+    // for(i = 0; i < N_GRID*N_GRID-1; i++) {
+    //     for(j = i+1; j < N_GRID*N_GRID; j++) {
+    //         delx = (i%N_GRID - j%N_GRID)*h;
+    //         dely = (i/N_GRID - j/N_GRID)*h;
+    //         r = sqrt(delx*delx+dely*dely);
+    //         v[i] += f[j]/4./M_PI*h*h/r;
+    //         v[j] += f[i]/4./M_PI*h*h/r;
+    //     }
+    // }
+
+    solve();
+
 }
 
 /** Calculate the accelaration field based on the solution of the Poison equation */
 void galaxy::galaxy_calc_acc_field() {
     int i, j;
-    // for(i = 0; i < N_GRID; i++) {
-    //     for(j = 0; j < N_GRID; j++) {
-    //         // Calculate ax
-    //         if(i==0) ax[i+N_GRID*j] = v[i+1+N_GRID*j]/2./h;
-    //         else {
-    //             if(i==N_GRID-1) ax[i+N_GRID*j] = - v[i-1+N_GRID*j]/2./h;
-    //             else ax[i+N_GRID*j] = (v[i+1+N_GRID*j] - v[i-1+N_GRID*j])/2./h;
-    //         }
-
-    //         // Calculate ay
-    //         if(j==0) ay[i+N_GRID*j] = v[i+N_GRID*(j+1)]/2./h;
-    //         else {
-    //             if(j==N_GRID-1) ay[i+N_GRID*j] = - v[i+N_GRID*(j-1)]/2./h;
-    //             else ay[i+N_GRID*j] = (v[i+N_GRID*(j+1)] - v[i+N_GRID*(j-1)])/2./h;
-    //         }
-    //     }
-    // }
 
     for(i = 0; i < N_GRID; i++) {
         for(j = 0; j < N_GRID; j++) {
+
             // calculate ax
             switch(i) {
                 case 0:
@@ -133,22 +158,50 @@ void galaxy::galaxy_ff_newton(double t_,double *in,double *out) {
     }
 }
 
-/** Calculate accelaration using PM. */
+/** Direct summation. */
+void galaxy::galaxy_ff_sum(double t_,double *in,double *out) {
+    double delx, dely, r3;
+
+    for(int i = 0; i < N; i++) {
+        out[4*i] = in[4*i+2];
+        out[4*i+1] = in[4*i+3];
+        out[4*i+2] = out[4*i+3] = 0;
+    }
+
+    for(int i = 0; i < N-1; i++) {
+        for(int j = i+1; j < N; j++) {
+            delx = -in[4*i] + in[4*j];
+            dely = -in[4*i+1] + in[4*j+1];
+            r3 = pow(delx*delx+dely*dely,1.5);
+            if(r3<1e-4) r3 = 1e-4;
+            out[4*i+2] += G*m[j]*delx/r3;
+            out[4*i+3] += G*m[j]*dely/r3;
+            out[4*j+2] -= G*m[i]*delx/r3;
+            out[4*j+3] -= G*m[i]*dely/r3;
+        }
+    }
+
+
+}
+
+/** Calculate particle accelarations using PM. */
 void galaxy::galaxy_ff_PM(double t_,double *in,double *out) {
     int i;
     // The two equations dx/dt = v
     for(i = 0; i < N; i++) {
         out[4*i] = in[4*i+2];
         out[4*i+1] = in[4*i+3];
+        out[4*i+2] = out[4*i+3] = 0;
     }
 
     // Solve the Poisson equation
     galaxy_calc_rho(in);
-    solve();
+    galaxy_calc_potential();
 
     // Calculate the accelaration field
     galaxy_calc_acc_field();
 
+    /* CIC */
     // // Calculate the accelaration of each particle
     // int N_out = 0;
     // double x, y;
@@ -164,7 +217,6 @@ void galaxy::galaxy_ff_PM(double t_,double *in,double *out) {
     //     if(x_>=0 || x_<N_GRID-1 || y_>=0 || y_<N_GRID-1) {
     //         delx = x - x_;
     //         dely = y - y_;
-
     //         // Interpolate to find the accelaration of the particle
     //         out[4*i+2] = (1-delx)*(1-dely)*ax[x_+N_GRID*y_] + 
     //                      delx*(1-dely)*ax[x_+1+N_GRID*y_] + 
@@ -184,15 +236,24 @@ void galaxy::galaxy_ff_PM(double t_,double *in,double *out) {
     //     }
     // }
 
+    /* NGB */
     int indi, indj;
+    double r;
     for(i = 0; i < N; i++) {
+        r = sqrt(in[4*i]*in[4*i] + in[4*i+1]*in[4*i+1]);
+
+        if(fabs(in[4*i])>H_BOXSIZE-h || fabs(in[4*i+1])>H_BOXSIZE-h) {
+            out[4*i+2] = -G*N*in[4*i]/pow(r,3);
+            out[4*i+3] = -G*N*in[4*i+1]/pow(r,3);
+            continue;
+        }
+
         indi = (int)((in[4*i] + H_BOXSIZE) / h) - 1;
         indj = (int)((in[4*i+1] + H_BOXSIZE) / h) - 1;
-        if(indi>=0 && indi<N_GRID-1 && indj>=0 && indj<N_GRID-1) {
-            if(in[4*i] - indi*h > h/2.) indi = indi+1;
-            if(in[4*i+1] - indj*h > h/2.) indj = indj+1;
-            out[4*i+2] = ax[indi+indj*N_GRID];
-            out[4*i+3] = ay[indi+indj*N_GRID];
-        }
+        if(in[4*i] + H_BOXSIZE - (indi+1)*h > h/2.) indi += 1;
+        if(in[4*i+1] + H_BOXSIZE - (indj+1)*h > h/2.) indj += 1;
+
+        out[4*i+2] = ax[indi + N_GRID*indj];
+        out[4*i+3] = ay[indi + N_GRID*indj];
     }
 }
