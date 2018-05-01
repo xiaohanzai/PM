@@ -42,7 +42,7 @@ void galaxy::galaxy_init() {
     calculate RHS of the Poisson equation. */
 void galaxy::galaxy_calc_rho(double *in) {
     int i;
-    for(i = 0; i < N_GRID*N_GRID; i++) f[i] = 0;
+    for(i = 0; i < N_GRID*N_GRID*(2*NZ+1); i++) f[i] = 0;
 
     /* CIC */
     // double x, y, h2 = pow(h,2);
@@ -72,23 +72,35 @@ void galaxy::galaxy_calc_rho(double *in) {
         indj = (int)((in[4*i+1] + H_BOXSIZE) / h) - 1;
         if(in[4*i] + H_BOXSIZE - (indi+1)*h > h/2.) indi += 1;
         if(in[4*i+1] + H_BOXSIZE - (indj+1)*h > h/2.) indj += 1;
-        f[indi + N_GRID*indj] += 4*M_PI*G*m[i]/h/h;
+        f[indi + N_GRID*indj+N_GRID*N_GRID*NZ] += 4*M_PI*G*m[i]/h/h/h;
     }
 
     /* Boundary Conditions */
-    // double x, y;
-    // for(indi = 0; indi < N_GRID; indi++) {
-    //     x = -H_BOXSIZE + (indi+1)*h;
-    //     y = H_BOXSIZE;
-    //     f[indi+N_GRID*0] += G*N/sqrt(x*x+y*y)/h/h;
-    //     f[indi+N_GRID*(N_GRID-1)] += G*N/sqrt(x*x+y*y)/h/h;
-    // }
-    // for(indj = 0; indj < N_GRID; indj++) {
-    //     y = -H_BOXSIZE + (indj+1)*h;
-    //     x = H_BOXSIZE;
-    //     f[0+N_GRID*indj] += G*N/sqrt(x*x+y*y)/h/h;
-    //     f[N_GRID-1+N_GRID*indj] += G*N/sqrt(x*x+y*y)/h/h;
-    // }
+    double x, y, z;
+    // the 4 rectangular faces
+    for(int indk = -NZ; indk <= NZ; indk++) {
+        for(indi = 0; indi < N_GRID; indi++) {
+            x = -H_BOXSIZE + (indi+1)*h;
+            y = H_BOXSIZE;
+            z = indk*h;
+            f[indi+N_GRID*0+N_GRID*N_GRID*(indk+NZ)] += G*N/sqrt(x*x+y*y+z*z)/h/h;
+            f[indi+N_GRID*(N_GRID-1)+N_GRID*N_GRID*(indk+NZ)] += G*N/sqrt(x*x+y*y+z*z)/h/h;
+            f[0+N_GRID*indi+N_GRID*N_GRID*(indk+NZ)] += G*N/sqrt(x*x+y*y+z*z)/h/h;
+            f[(N_GRID-1)+N_GRID*indi+N_GRID*N_GRID*(indk+NZ)] += G*N/sqrt(x*x+y*y+z*z)/h/h;
+        }
+    }
+    // the 2 square faces
+    for(indi = 0; indi < N_GRID; indi++) {
+        for(indj = 0; indj < N_GRID; indj++) {
+            for(i = 0; i < N; i++) {
+                x = -H_BOXSIZE + (indi+1)*h - in[4*i];
+                y = -H_BOXSIZE + (indj+1)*h - in[4*i+1];
+                z = (NZ+1)*h;
+                f[indi+N_GRID*indj+N_GRID*N_GRID*0] += G*m[i]/sqrt(x*x+y*y+z*z)/h/h;
+                f[indi+N_GRID*indj+N_GRID*N_GRID*(2*NZ)] += G*m[i]/sqrt(x*x+y*y+z*z)/h/h;
+            }
+        }
+    }
             
 }
 
@@ -121,25 +133,24 @@ void galaxy::galaxy_calc_acc_field() {
 
     for(i = 0; i < N_GRID; i++) {
         for(j = 0; j < N_GRID; j++) {
-
             // calculate ax
             switch(i) {
                 case 0:
-                    ax[i+N_GRID*j] = v[i+1+N_GRID*j]/2./h; break;
+                    ax[i+N_GRID*j] = v[i+1+N_GRID*j+N_GRID*N_GRID*NZ]/2./h; break;
                 case N_GRID-1:
-                    ax[i+N_GRID*j] = -v[i-1+N_GRID*j]/2./h; break;
+                    ax[i+N_GRID*j] = -v[i-1+N_GRID*j+N_GRID*N_GRID*NZ]/2./h; break;
                 default:
-                    ax[i+N_GRID*j] = (v[i+1+N_GRID*j]-v[i-1+N_GRID*j])/2./h;
+                    ax[i+N_GRID*j] = (v[i+1+N_GRID*j+N_GRID*N_GRID*NZ]-v[i-1+N_GRID*j+N_GRID*N_GRID*NZ])/2./h;
             }
 
             // calculate ay
             switch(j) {
                 case 0:
-                    ay[i+N_GRID*j] = v[i+N_GRID*(j+1)]/2./h; break;
+                    ay[i+N_GRID*j] = v[i+N_GRID*(j+1)+N_GRID*N_GRID*NZ]/2./h; break;
                 case N_GRID-1:
-                    ay[i+N_GRID*j] = -v[i+N_GRID*(j-1)]/2./h; break;
+                    ay[i+N_GRID*j] = -v[i+N_GRID*(j-1)+N_GRID*N_GRID*NZ]/2./h; break;
                 default:
-                    ay[i+N_GRID*j] = (v[i+N_GRID*(j+1)]-v[i+N_GRID*(j-1)])/2./h;
+                    ay[i+N_GRID*j] = (v[i+N_GRID*(j+1)+N_GRID*N_GRID*NZ]-v[i+N_GRID*(j-1)+N_GRID*N_GRID*NZ])/2./h;
             }
         }
     }
@@ -148,7 +159,7 @@ void galaxy::galaxy_calc_acc_field() {
 /** Perfect centrifugal force. */
 void galaxy::galaxy_ff_newton(double t_,double *in,double *out) {
     double Mtot = (double)(N);
-    double omega2 = 3*M_PI*Mtot/4;
+    double omega2 = 3.*M_PI*Mtot/4;
 
     for(int i = 0; i < N; i++) {
         out[4*i] = in[4*i+2];
@@ -180,8 +191,6 @@ void galaxy::galaxy_ff_sum(double t_,double *in,double *out) {
             out[4*j+3] -= G*m[i]*dely/r3;
         }
     }
-
-
 }
 
 /** Calculate particle accelarations using PM. */
@@ -242,7 +251,7 @@ void galaxy::galaxy_ff_PM(double t_,double *in,double *out) {
     for(i = 0; i < N; i++) {
         r = sqrt(in[4*i]*in[4*i] + in[4*i+1]*in[4*i+1]);
 
-        if(fabs(in[4*i])>H_BOXSIZE-h || fabs(in[4*i+1])>H_BOXSIZE-h) {
+        if(fabs(in[4*i]) > H_BOXSIZE - h || fabs(in[4*i+1]) > H_BOXSIZE - h) {
             out[4*i+2] = -G*N*in[4*i]/pow(r,3);
             out[4*i+3] = -G*N*in[4*i+1]/pow(r,3);
             continue;
@@ -256,4 +265,5 @@ void galaxy::galaxy_ff_PM(double t_,double *in,double *out) {
         out[4*i+2] = ax[indi + N_GRID*indj];
         out[4*i+3] = ay[indi + N_GRID*indj];
     }
+    
 }

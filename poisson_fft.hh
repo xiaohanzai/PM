@@ -35,6 +35,7 @@ class poisson_fft {
         /** An array holding the eigenvalues of the one-dimensional Poisson
          * matrix T_N. */
         double* const lam;
+        double* const lam1;
         /** The FFTW plan for converting the source term into the frequency
          * domain. */
         fftw_plan plan_fwd;
