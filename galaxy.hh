@@ -11,7 +11,8 @@
 #include "sol_leapfrog.hh"
 #include "poisson_fft.hh"
 
-#define N_GRID 32
+#define N_GRID 64
+#define NZ 4
 #define H_BOXSIZE 2 // half boxsize
 #define G 1.
 
@@ -22,9 +23,8 @@ class galaxy : public leapfrog, public poisson_fft {
         char filename[30]; // name of the IC file
 
         // the accelaration field
-        double ax[N_GRID*N_GRID*N_GRID];
-        double ay[N_GRID*N_GRID*N_GRID];
-        double az[N_GRID*N_GRID*N_GRID];
+        double ax[N_GRID*N_GRID];
+        double ay[N_GRID*N_GRID];
 
         galaxy(int N_, const char *filename_);
         ~galaxy();

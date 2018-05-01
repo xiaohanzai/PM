@@ -4,8 +4,6 @@
 // #include "file_output.hh"
 #include <fftw3.h>
 
-#define NZ 4
-
 class poisson_fft {
     public:
         /** The number of gridpoints in one dimension. */
@@ -37,6 +35,7 @@ class poisson_fft {
         /** An array holding the eigenvalues of the one-dimensional Poisson
          * matrix T_N. */
         double* const lam;
+        double* const lam1;
         /** The FFTW plan for converting the source term into the frequency
          * domain. */
         fftw_plan plan_fwd;

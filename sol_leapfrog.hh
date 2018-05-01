@@ -3,7 +3,7 @@
 
 #include "sol_base.hh"
 
-#define NDIM 3 // solve 2D problems
+#define NDIM 2 // solve 2D problems
 
 /** Class for solving an ODE IVP using the leap frog method.
  */
