@@ -4,6 +4,8 @@
 // #include "file_output.hh"
 #include <fftw3.h>
 
+#define NZ 4
+
 class poisson_fft {
     public:
         /** The number of gridpoints in one dimension. */

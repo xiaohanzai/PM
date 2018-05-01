@@ -7,10 +7,10 @@
  * [0,1]^2 using the fast Fourier transform.
  * \param[in] n the number of non-zero gridpoints in one direction. */
 poisson_fft::poisson_fft(int n_)
-    : n(n_), nn(n*n), h(1./(n+1)), f(fftw_alloc_real(nn)),
+    : n(n_), nn(n*n*n), h(1./(n+1)), f(fftw_alloc_real(nn)),
     v(fftw_alloc_real(nn)), w(fftw_alloc_real(nn)), lam(new double[n]),
-    plan_fwd(fftw_plan_r2r_2d(n,n,f,w,FFTW_RODFT00,FFTW_RODFT00,FFTW_MEASURE)),
-    plan_bck(fftw_plan_r2r_2d(n,n,w,v,FFTW_RODFT00,FFTW_RODFT00,FFTW_MEASURE)) {
+    plan_fwd(fftw_plan_r2r_3d(n,n,n,f,w,FFTW_RODFT00,FFTW_RODFT00,FFTW_RODFT00,FFTW_MEASURE)),
+    plan_bck(fftw_plan_r2r_3d(n,n,n,w,v,FFTW_RODFT00,FFTW_RODFT00,FFTW_RODFT00,FFTW_MEASURE)) {
 
     // Initialize the table of eigenvalues
     const double fac=M_PI/(n+1);
@@ -42,7 +42,7 @@ poisson_fft::~poisson_fft() {
 
 /** Solves the linear system using the fast Fourier transform. */
 void poisson_fft::solve() {
-    const double nor=1./(2*(n+1)),fac=h*h*nor*nor;
+    const double nor=1./(2*(n+1)),fac=h*h*nor*nor*nor;
 
     // Perform the discrete sine transform using FFTW to convert the source
     // term into the frequency domain
@@ -51,8 +51,8 @@ void poisson_fft::solve() {
     // Multiply each mode component by the corresponding scaling factor. Note
     // that a factor of nor^2 is included to deal with the overall scaling of
     // the FFTW routines.
-    for(int j=0;j<n;j++) for(int i=0;i<n;i++) {
-        w[i+n*j]*=fac/(lam[i]+lam[j]);
+    for(int k=0;k<n;k++) for(int j=0;j<n;j++) for(int i=0;i<n;i++) {
+        w[i+n*j+n*n*k]*=fac/(lam[i]+lam[j]+lam[k]);
     }
 
     // Perform the discrete sine transform again to obtain the solution
@@ -63,9 +63,12 @@ void poisson_fft::solve() {
  * \param[in] solution whether to print the solution */
 void poisson_fft::print_fftsolution(bool solution) {
     double *ptr=solution?v:f;
-    for(int j=0;j<n;j++) {
-        printf("%g",v[j]);
-        for(int i=1;i<n;i++) printf(" %g",ptr[j+i*n]);
+    for(int k=0;k<n;k++) {
+        for(int j=0;j<n;j++) {
+            for(int i=0;i<n;i++)
+                printf("%g ",ptr[i+j*n+k*n*n]);
+            // putchar('\n');
+        }
         putchar('\n');
     }
 }
