@@ -1,4 +1,5 @@
 #include "galaxy.hh"
+#include <omp.h>
 
 galaxy::galaxy(int N_, const char *filename_) : leapfrog(4*N_), poisson_fft(N_GRID), N(N_) {
     m = new double[N];
@@ -59,6 +60,7 @@ void galaxy::galaxy_calc_rho(double *in) {
     /* Boundary Conditions */
     double x, y, z;
     // the 4 rectangular faces
+#pragma omp parallel for collapse(2)
     for(int indk = -NZ; indk <= NZ; indk++) {
         for(indi = 0; indi < N_GRID; indi++) {
             x = -H_BOXSIZE + (indi+1)*h;
@@ -70,6 +72,7 @@ void galaxy::galaxy_calc_rho(double *in) {
             f[(N_GRID-1)+N_GRID*indi+N_GRID*N_GRID*(indk+NZ)] += G*N/sqrt(x*x+y*y+z*z)/h/h;
         }
     }
+#pragma omp parallel for collapse(2)
     // the 2 square faces
     for(indi = 0; indi < N_GRID; indi++) {
         for(indj = 0; indj < N_GRID; indj++) {
@@ -112,6 +115,7 @@ void galaxy::galaxy_calc_potential() {
 void galaxy::galaxy_calc_acc_field() {
     int i, j;
 
+#pragma omp parallel for collapse(2)
     for(i = 0; i < N_GRID; i++) {
         for(j = 0; j < N_GRID; j++) {
             // calculate ax
