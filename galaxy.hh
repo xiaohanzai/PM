@@ -11,9 +11,9 @@
 #include "sol_leapfrog.hh"
 #include "poisson_fft.hh"
 
-#define N_GRID 64
+#define N_GRID 128
 #define NZ 4
-#define H_BOXSIZE 2 // half boxsize
+#define H_BOXSIZE 4 // half boxsize
 #define G 1.
 
 class galaxy : public leapfrog, public poisson_fft {
