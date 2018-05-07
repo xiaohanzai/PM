@@ -44,25 +44,6 @@ void galaxy::galaxy_calc_rho(double *in) {
     int i;
     for(i = 0; i < N_GRID*N_GRID*(2*NZ+1); i++) f[i] = 0;
 
-    /* CIC */
-    // double x, y, h2 = pow(h,2);
-    // double delx, dely;
-    // int x_, y_;
-    // for(i = 0; i < N; i++) {
-    //     x = (in[4*i] + H_BOXSIZE)/h - 1;
-    //     y = (in[4*i+1] + H_BOXSIZE)/h - 1;
-    //     x_ = (int)(x);
-    //     y_ = (int)(y);
-    //     if(x_>=0 || x_<N_GRID-1 || y_>=0 || y_<N_GRID-1) {
-    //         delx = x - x_;
-    //         dely = y - y_;
-    //         f[y_*N_GRID+x_] += m[i]*(1-delx)*(1-dely)/h2*4*M_PI;
-    //         f[y_*N_GRID+x_+1] += m[i]*delx*(1-dely)/h2*4*M_PI;
-    //         f[(y_+1)*N_GRID+x_] += m[i]*(1-delx)*dely/h2*4*M_PI;
-    //         f[(y_+1)*N_GRID+x_+1] += m[i]*delx*dely/h2*4*M_PI;
-    //     }
-    // }
-
     /* NGP */
     int indi, indj;
     for(i = 0; i < N; i++) {
@@ -209,41 +190,6 @@ void galaxy::galaxy_ff_PM(double t_,double *in,double *out) {
 
     // Calculate the accelaration field
     galaxy_calc_acc_field();
-
-    /* CIC */
-    // // Calculate the accelaration of each particle
-    // int N_out = 0;
-    // double x, y;
-    // double delx, dely;
-    // double Mtot = (double)(N);
-    // double omega2 = 3*M_PI*Mtot/4;
-    // int x_, y_;
-    // for(i = 0; i < N; i++) {
-    //     x = (in[4*i] + H_BOXSIZE)/h - 1;
-    //     y = (in[4*i+1] + H_BOXSIZE)/h - 1;
-    //     x_ = (int)(x);
-    //     y_ = (int)(y);
-    //     if(x_>=0 || x_<N_GRID-1 || y_>=0 || y_<N_GRID-1) {
-    //         delx = x - x_;
-    //         dely = y - y_;
-    //         // Interpolate to find the accelaration of the particle
-    //         out[4*i+2] = (1-delx)*(1-dely)*ax[x_+N_GRID*y_] + 
-    //                      delx*(1-dely)*ax[x_+1+N_GRID*y_] + 
-    //                      (1-delx)*dely*ax[x_+N_GRID*(y_+1)] + 
-    //                      delx*dely*ax[x_+1+N_GRID*(y_+1)];
-    //         out[4*i+3] = (1-delx)*(1-dely)*ay[x_+N_GRID*y_] + 
-    //                      delx*(1-dely)*ay[x_+1+N_GRID*y_] + 
-    //                      (1-delx)*dely*ay[x_+N_GRID*(y_+1)] + 
-    //                      delx*dely*ay[x_+1+N_GRID*(y_+1)];
-    //     }
-    //     else {
-    //         // If the particle is out of the grid
-    //         N_out++;
-    //         if(N_out>0.1*N) exit(1);
-    //         out[4*i+2] = -in[4*i] * omega2; // revise this treatment
-    //         out[4*i+3] = -in[4*i+1] * omega2;
-    //     }
-    // }
 
     /* NGB */
     int indi, indj;

@@ -14,7 +14,10 @@ r = (x**2 + y**2)**0.5
 # generate velocities
 omega = (3*np.pi*G*N/4)**0.5
 v_rot = r*omega
-sigma = 0 #0.136 * 1*omega # use 13.6% v(R_0) as the velocity dispersion
+# use a fraction of v(R_0) (for instace 13.6%) as the velocity dispersion
+sigma = 0 #0.136 * 1*omega
+# # or use equation 15 of Hockney & Hohl 1969
+# sigma = 0.342*(1-r**2)**0.5*omega
 v_r = np.random.randn(N)*sigma
 v_theta = np.random.randn(N)*sigma + v_rot
 v_x = v_r*x/r - v_theta*y/r
