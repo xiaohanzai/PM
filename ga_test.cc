@@ -1,4 +1,5 @@
 #include "galaxy.hh"
+#include <omp.h>
 
 int main() {
 
@@ -15,7 +16,7 @@ int main() {
     // // test FFT solved potential
     // galaxy ga(20000,"IC/ic_0.txt");
     // ga.init();
-    // ga.galaxy_calc_rho(ga.q); //printf("%d\n", ga.nn);
+    // ga.galaxy_calc_rho(ga.q);
     // ga.galaxy_calc_potential();
     // ga.print_fftsolution(true);
 
@@ -49,7 +50,9 @@ int main() {
     ////////////////////////////////////////////////////////////////////////////////
     // test evolution
     galaxy ga(20000,"IC/ic_0.txt");
+    double t0 = omp_get_wtime();
     ga.solve_fixed(0.03,200,true);
+    printf("# wall clock time: %g\n", omp_get_wtime() - t0);
 
     return 0;
 
