@@ -1,0 +1,9 @@
+*.o
+ga_test
+a.out
+sol_sun*
+tmp*
+*.out
+print_potential
+print_rho
+
