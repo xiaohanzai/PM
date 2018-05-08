@@ -4,17 +4,17 @@
 int main() {
 
     // // test reading IC
-    // galaxy ga(1000,"IC/ic_0.txt");
+    // galaxy ga(20000,"IC/ic_3.txt",20000,1);
     // ga.galaxy_init();
 
     // // test FFT source term
-    // galaxy ga(20000,"IC/ic_0.txt");
+    // galaxy ga(20000,"IC/ic_3.txt",20000,1);
     // ga.init();
     // ga.galaxy_calc_rho(ga.q);
     // ga.print_fftsolution(false);
 
     // // test FFT solved potential
-    // galaxy ga(20000,"IC/ic_0.txt");
+    // galaxy ga(20000,"IC/ic_3.txt",20000,1);
     // ga.init();
     // ga.galaxy_calc_rho(ga.q);
     // ga.galaxy_calc_potential();
@@ -22,7 +22,7 @@ int main() {
 
     // // test FFT accelaration field
     // double out[20000*4];
-    // galaxy ga(20000,"IC/ic_0.txt");
+    // galaxy ga(20000,"IC/ic_3.txt",20000,1);
     // ga.init();
     // // ga.galaxy_calc_rho(ga.q); //printf("%d\n", ga.nn);
     // // ga.solve();
@@ -40,7 +40,7 @@ int main() {
 
     // // test direct summation accelaration
     // double out[20000*4];
-    // galaxy ga(20000,"IC/ic_0.txt");
+    // galaxy ga(20000,"IC/ic_3.txt",20000,1);
     // ga.init();
     // ga.galaxy_ff_sum(0,ga.q,out);
     // for(int i = 0; i < ga.N; i++) {
@@ -49,9 +49,11 @@ int main() {
 
     ////////////////////////////////////////////////////////////////////////////////
     // test evolution
-    galaxy ga(20000,"IC/ic_0.txt");
     double t0 = omp_get_wtime();
-    ga.solve_fixed(0.03,200,true);
+    // galaxy ga(20000,"IC/ic_0.txt",0,1);
+    // ga.solve_fixed(0.03,200,true);
+    galaxy ga(20000,"IC/ic_3.txt",20000,1);
+    ga.solve_fixed(0.024,200,true);
     printf("# wall clock time: %g\n", omp_get_wtime() - t0);
 
     return 0;
