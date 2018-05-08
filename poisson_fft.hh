@@ -1,7 +1,6 @@
 #ifndef POISSON_FFT
 #define POISSON_FFT
 
-// #include "file_output.hh"
 #include <fftw3.h>
 
 class poisson_fft {
@@ -20,17 +19,8 @@ class poisson_fft {
         double *w;
         poisson_fft(int n_);
         ~poisson_fft();
-        // virtual void init() = 0;
         void solve();
-        // void init_mms();
-        // double l2_error_mms();
         void print_fftsolution(bool solution);
-        // void output_solution(const char* filename);
-        /** Outputs the source term in the 2D Gnuplot matrix format.
-         * \param[in] filename the name of the file to write to. */
-        // inline void output_source(const char* filename) {
-        //     gnuplot_output(filename,f,n,n,h,1-h,h,1-h);
-        // }
     private:
         /** An array holding the eigenvalues of the one-dimensional Poisson
          * matrix T_N. */

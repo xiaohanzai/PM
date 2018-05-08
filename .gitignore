@@ -4,4 +4,6 @@ a.out
 sol_sun*
 tmp*
 *.out
+print_potential
+print_rho
 

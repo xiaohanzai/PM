@@ -3,68 +3,27 @@
 
 int main() {
 
-    // // test reading IC
-    // galaxy ga(20000,"IC/ic_3.txt",20000,1);
-    // ga.galaxy_init();
+    // test evolution
+    double t0 = omp_get_wtime();
 
-    // // test FFT source term
-    // galaxy ga(20000,"IC/ic_0.txt",0,1);
-    // ga.init();
-    // ga.galaxy_calc_rho(ga.q);
-    // ga.print_fftsolution(false);
-
-    // test FFT solved potential
+    /* the 2 lines below suit ic_0, ic_1, ic_2 */
     galaxy ga(20000,"IC/ic_0.txt",0,1);
-    ga.init();
-    ga.galaxy_calc_rho(ga.q);
-    ga.galaxy_calc_potential();
-    ga.print_fftsolution(true);
+    ga.solve_fixed(0.03,200,true);
 
-    // // test FFT accelaration field
-    // double out[20000*4];
+    /* the 2 lines below suit ic_3 */
     // galaxy ga(20000,"IC/ic_3.txt",20000,1);
-    // ga.init();
-    // // ga.galaxy_calc_rho(ga.q); //printf("%d\n", ga.nn);
-    // // ga.solve();
-    // // ga.galaxy_calc_acc_field();
-    // // for(int i = 0; i < ga.n; i++) {
-    // //     for(int j = 0; j < ga.n; j++)
-    // //         printf("%g ", sqrt(ga.ax[i+j*ga.n]*ga.ax[i+j*ga.n] + 
-    // //             ga.ay[i+j*ga.n]*ga.ay[i+j*ga.n]));
-    // //     puts("");
-    // // }
-    // ga.galaxy_ff_PM(0,ga.q,out);
-    // for(int i = 0; i < ga.N; i++) {
-    //     printf("%g %g %g %g\n", ga.q[4*i], ga.q[4*i+1], out[4*i+2], out[4*i+3]);
-    // }
+    // ga.solve_fixed(0.024,200,true);
 
-    // // test direct summation accelaration
-    // double out[20000*4];
-    // galaxy ga(20000,"IC/ic_3.txt",20000,1);
-    // ga.init();
-    // ga.galaxy_ff_sum(0,ga.q,out);
-    // for(int i = 0; i < ga.N; i++) {
-    //     printf("%g %g %g %g\n", ga.q[4*i], ga.q[4*i+1], out[4*i+2], out[4*i+3]);
-    // }
+    /* for ic_4_* */
+    // galaxy ga(20000,"IC/ic_4_5.txt",20000,1);
+    // ga.solve_fixed(0.024*4,200*4,true);
 
-    ////////////////////////////////////////////////////////////////////////////////
-    
-    // // test evolution
-    // double t0 = omp_get_wtime();
-    
-    // // galaxy ga(20000,"IC/ic_0.txt",0,1);
-    // // ga.solve_fixed(0.03,200,true);
-    
-    // // galaxy ga(20000,"IC/ic_3.txt",20000,1);
-    // // ga.solve_fixed(0.024,200,true);
-    
-    // // galaxy ga(20000,"IC/ic_4_5.txt",20000,1);
-    // // ga.solve_fixed(0.024*4,200*4,true);
-
+    /* for ic_clump_*:
+       use 20200, 20500, 20100 for ic_clump_0, 1, 2 respectively */
     // galaxy ga(21000,"IC/ic_clump_2.txt",20000,1);
     // ga.solve_fixed(0.024*4,200*4,true);
 
-    // printf("# wall clock time: %g\n", omp_get_wtime() - t0);
+    printf("# wall clock time: %g\n", omp_get_wtime() - t0);
 
     return 0;
 

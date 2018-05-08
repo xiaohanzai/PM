@@ -1,9 +1,9 @@
 import numpy as np
 
 N = 20000
-fname = 'ic_4_3.txt'
+fname = 'ic_0.txt'
 G = 1
-Mhalo = 20000
+Mhalo = 0
 rhalo = 1
 
 # generate positions
@@ -18,8 +18,8 @@ omega = (3*np.pi*G*N/4 + Mhalo/rhalo**3)**0.5
 v_rot = r*omega
 # use a fraction of v(R_0) (for instace 13.6%) as the velocity dispersion
 sigma = 0 #0.136 * 1*omega
-# or use equation 15 of Hockney & Hohl 1969
-sigma = 0.342*(1-r**2)**0.5*omega * 0.6
+# # or use equation 15 of Hockney & Hohl 1969
+# sigma = 0.342*(1-r**2)**0.5*omega
 v_r = np.random.randn(N)*sigma
 v_theta = np.random.randn(N)*sigma + v_rot
 v_x = v_r*x/r - v_theta*y/r

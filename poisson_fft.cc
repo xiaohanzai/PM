@@ -18,7 +18,6 @@ poisson_fft::poisson_fft(int n_)
     for(int j=0;j<n;j++) lam[j]=2*(1-cos(fac*(j+1)));
     fac=M_PI/(2*NZ+1+1);
     for(int j=0;j<2*NZ+1;j++) lam1[j]=2*(1-cos(fac*(j+1)));
-    //for(int j=0;j<n;j++) lam[j]=fac*fac*(j+1)*(j+1);
 }
 
 /** The class destructor frees the dynamically allocated memory, including the
@@ -32,17 +31,6 @@ poisson_fft::~poisson_fft() {
     fftw_free(v);
     fftw_free(f);
 }
-
-// /** Initializes the source term to be a stepped function. */
-// void poisson_fft::init() {
-//     for(int j=0;j<n;j++) {
-//         double y=(j+1)*h;
-//         for(int i=0;i<n;i++) {
-//             double x=(i+1)*h;
-//             f[i+n*j]=fabs(x-0.5)<0.25&&fabs(y-0.5)<0.25?(x>0.5?-1:1):0;
-//         }
-//     }
-// }
 
 /** Solves the linear system using the fast Fourier transform. */
 void poisson_fft::solve() {
@@ -71,59 +59,7 @@ void poisson_fft::print_fftsolution(bool solution) {
         for(int j=0;j<n;j++) {
             for(int i=0;i<n;i++)
                 printf("%g ",ptr[i+j*n+k*n*n]);
-            // putchar('\n');
         }
         putchar('\n');
     }
 }
-
-// /** Outputs the solution in the Gnuplot 2D matrix format, padding the grid with
-//  * zeros to represent the Dirichlet boundary condition.
-//  * \param[in] filename the name of the file to write to. */
-// void poisson_fft::output_solution(const char* filename) {
-//     const int ne=n+2;
-//     double *fld=new double[(n+2)*(n+2)],*f2=fld;
-
-//     // Set first row to zero
-//     while(f2<fld+ne) *(f2++)=0.;
-
-//     // Copy field contents into output array, padding the start and end entries
-//     // with zeros
-//     for(int j=0;j<n;j++) {
-//         *(f2++)=0;
-//         for(int i=0;i<n;i++) *(f2++)=v[i+j*n];
-//         *(f2++)=0;
-//     }
-
-//     // Set last row to zero, call output routine, and free output array
-//     while(f2<fld+ne*ne) *(f2++)=0.;
-//     gnuplot_output(filename,fld,ne,ne,0,1,0,1);
-//     delete [] fld;
-// }
-
-/** Initializes the source term corresponding to the manufactured solution with
- * v(x,y)=(1-x*x)*(1-y*y)*exp(x). */
-// void poisson_fft::init_mms() {
-//     for(int j=0;j<n;j++) {
-//         double y=(j+1)*h;
-//         for(int i=0;i<n;i++) {
-//             double x=(i+1)*h;
-//             f[i+n*j]=-exp(x)*x*(-2-3*y+3*y*y+x*(2-y+y*y));
-//         }
-//     }
-// }
-
-/** Calculates the L2 norm of the difference between the computed solution and
- * the analytical manufactured solution. */
-// double poisson_fft::l2_error_mms() {
-//     double l2=0,del;
-//     for(int j=0;j<n;j++) {
-//         double y=(j+1)*h;
-//         for(int i=0;i<n;i++) {
-//             double x=(i+1)*h;
-//             del=v[i+n*j]-exp(x)*x*(1-x)*y*(1-y);
-//             l2+=del*del;
-//         }
-//     }
-//     return sqrt(h*h*l2);
-// }

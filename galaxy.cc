@@ -124,23 +124,6 @@ void galaxy::galaxy_calc_rho(double *in) {
 }
 
 void galaxy::galaxy_calc_potential() {
-    /* Direct summation for the grid points */
-    // int i, j;
-    // double delx, dely, r;
-    // for(i = 0; i < N_GRID; i++) {
-    //     for(j = 0; j < N_GRID; j++) {
-    //         v[i+N_GRID*j] = f[i+N_GRID*j]/4./M_PI*h;
-    //     }
-    // }
-    // for(i = 0; i < N_GRID*N_GRID-1; i++) {
-    //     for(j = i+1; j < N_GRID*N_GRID; j++) {
-    //         delx = (i%N_GRID - j%N_GRID)*h;
-    //         dely = (i/N_GRID - j/N_GRID)*h;
-    //         r = sqrt(delx*delx+dely*dely);
-    //         v[i] += f[j]/4./M_PI*h*h/r;
-    //         v[j] += f[i]/4./M_PI*h*h/r;
-    //     }
-    // }
 
     solve();
 
