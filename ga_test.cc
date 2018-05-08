@@ -48,12 +48,19 @@ int main() {
     // }
 
     ////////////////////////////////////////////////////////////////////////////////
+    
     // test evolution
     double t0 = omp_get_wtime();
+    
     // galaxy ga(20000,"IC/ic_0.txt",0,1);
     // ga.solve_fixed(0.03,200,true);
-    galaxy ga(20000,"IC/ic_3.txt",20000,1);
+    
+    // galaxy ga(20000,"IC/ic_3.txt",20000,1);
+    // ga.solve_fixed(0.024,200,true);
+    
+    galaxy ga(20000,"IC/ic_4_3.txt",20000,1);
     ga.solve_fixed(0.024,200,true);
+
     printf("# wall clock time: %g\n", omp_get_wtime() - t0);
 
     return 0;
