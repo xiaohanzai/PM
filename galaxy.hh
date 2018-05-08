@@ -11,9 +11,9 @@
 #include "sol_leapfrog.hh"
 #include "poisson_fft.hh"
 
-#define N_GRID 128
+#define N_GRID 64
 #define NZ 4
-#define H_BOXSIZE 4 // half boxsize
+#define H_BOXSIZE 2 // half boxsize
 #define G 1.
 
 class galaxy : public leapfrog, public poisson_fft {
@@ -21,12 +21,14 @@ class galaxy : public leapfrog, public poisson_fft {
         const int N; // number of particles
         double *m; // mass of the particles
         char filename[30]; // name of the IC file
+        const double Mhalo; // halo (or core) mass
+        const double rhalo; // halo (or core) radius
 
         // the accelaration field
         double ax[N_GRID*N_GRID];
         double ay[N_GRID*N_GRID];
 
-        galaxy(int N_, const char *filename_);
+        galaxy(int N_, const char *filename_, double Mhalo_, double rhalo_);
         ~galaxy();
 
         /** Sets up the initial conditions for the ODE.
