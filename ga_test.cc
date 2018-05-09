@@ -14,8 +14,8 @@ int main() {
     // galaxy ga(20000,"IC/ic_3.txt",20000,1);
     // ga.solve_fixed(0.024,200,true);
 
-    /* for ic_4_* */
-    // galaxy ga(20000,"IC/ic_4_5.txt",20000,1);
+    /* for ic_4 */
+    // galaxy ga(20000,"IC/ic_4.txt",20000,1);
     // ga.solve_fixed(0.024*4,200*4,true);
 
     /* for ic_clump_*:
