@@ -14,7 +14,7 @@ y = X[ind[0:N],1]
 r = (x**2 + y**2)**0.5
 
 # generate velocities
-omega = (3*np.pi*G*N/4 + Mhalo/rhalo**3)**0.5
+omega = (3*np.pi*G*N/4 + G*Mhalo/rhalo**3)**0.5
 v_rot = r*omega
 # use a fraction of v(R_0) (for instace 13.6%) as the velocity dispersion
 sigma = 0 #0.136 * 1*omega
